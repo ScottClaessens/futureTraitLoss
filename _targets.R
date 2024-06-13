@@ -13,7 +13,7 @@ tar_option_set(
   )
 
 # get binary grambank traits
-binaryTraits <- 
+binaryGBTraits <- 
   read_csv(
     paste0(
       # Grambank version 1.0.3
@@ -27,11 +27,11 @@ binaryTraits <-
   filter(n == 2) %>% 
   pull(Parameter_ID)
 
-# targets for main imputations
-mainTargets <-
+# targets for main GB trait imputations
+mainGBTargets <-
   tar_map(
     # iterate over binary traits
-    values = tibble(trait = binaryTraits, type = "main"),
+    values = tibble(trait = binaryGBTraits, type = "main"),
     names = "trait",
     # write json file
     tar_target(json, writeDataJSON(values, mcc, treesSubset, 
@@ -54,11 +54,11 @@ mainTargets <-
     tar_target(plot, plotImputations(trait, mcc, imp))
   )
 
-# targets for validation
-validationTargets <-
+# targets for GB validation
+validationGBTargets <-
   tar_map(
     # iterate over binary traits
-    values = expand_grid(trait = binaryTraits, type = "validation", id = 1:2),
+    values = expand_grid(trait = binaryGBTraits, type = "validation", id = 1:2),
     names = c("trait", "id"),
     # which language is to be removed in the validation?
     tar_target(valLang, getValidationLanguage(values, trait, id)),
@@ -78,6 +78,9 @@ validationTargets <-
 
 # pipeline
 list(
+  
+  ### 1. Load data
+  
   # files
   tar_target(fileTrees, "data/edge6636-March-2023-no-metadata.trees", format = "file"),
   tar_target(fileXML, "xml/imputeTipsBEAST_multiTree_strictClock.xml", format = "file"),
@@ -91,15 +94,20 @@ list(
   # get phylogenetic distance matrix from mcc tree
   tar_target(phyDistMat, cophenetic.phylo(mcc)),
   # load grambank data
-  tar_target(values, getGBValues(mcc)),
+  tar_target(gb, getGBData(mcc)),
+  # load dplace data
+  tar_target(dplace, getDPLACEData(mcc)),
   # load phylogenetic signal data
-  tar_target(phySignal, read_csv(filePhySignal)),
+  tar_target(phySignal, read_csv(filePhySignal, show_col_types = FALSE)),
+  
+  ### 2. Grambank imputations
+  
   # run main imputations
-  mainTargets,
-  tar_combine(ess, mainTargets[["ess"]]),
+  mainGBTargets,
+  tar_combine(ess, mainGBTargets[["ess"]]),
   # run validations
-  validationTargets,
-  tar_combine(valResults, validationTargets[["valResult"]]),
+  validationGBTargets,
+  tar_combine(valResults, validationGBTargets[["valResult"]]),
   tar_target(plotVal, plotValidation(valResults)),
   # calculate auc
   tar_target(auc, calculateAUC(valResults)),

@@ -1,5 +1,5 @@
-# get grambank values
-getGBValues <- function(mcc) {
+# get grambank data
+getGBData <- function(mcc) {
   read_csv(
     paste0(
       # from Grambank version 1.0.3

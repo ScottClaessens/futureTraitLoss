@@ -7,6 +7,6 @@ getSubsetTrees <- function(trees, n = 100) {
   # get trees subset
   out <- trees[ids]
   # save trees subset
-  write.nexus(out, file = "files/trees/subset.trees")
+  write.nexus(out, file = "data/subset.trees")
   return(out)
 }
