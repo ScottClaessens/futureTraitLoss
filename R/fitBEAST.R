@@ -1,33 +1,28 @@
 # fit beast model
 fitBEAST <- function(trait, json, fileXML, type, id = NULL, numThreads = 1) {
-  # set working directory
-  system(paste0("cd ", getwd()))
+  # trait label
+  trait <- paste0(trait, ifelse(type == "main", "", paste0("_", id)))
   # get json file location
-  fileJSON <-
-    paste0(
-      "files/json/", type, "/",
-      paste0(trait, ifelse(type == "main", "", paste0("_", id))),
-      ".json"
-    )
+  fileJSON <- paste0("temp/", trait, ".json")
   # write command
   command <- 
     paste0(
       # run beast
-      "BEAST\\ 2.7.5/bin/beast ",
+      "BEAST.v2.7.6.Windows/BEAST/bat/beast.bat ",
       # number of threads
       "-threads ", numThreads, " ",
       # json file
       "-DF ", fileJSON, " ",
       # out file
-      "-DFout out/", type, "/out/", trait, ".xml ",
+      "-DFout temp/out_", trait, ".xml ",
       # overwrite any existing files
       "-overwrite ",
       # state file
-      "-statefile out/", type, "/state/", trait, ".state ",
+      "-statefile temp/state_", trait, ".state ",
       # xml file
       fileXML
     )
-  # execute command
+  # execute commands
   system(command)
   return(paste0("Finished running at ", Sys.time()))
 }

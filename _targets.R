@@ -34,24 +34,19 @@ mainGBTargets <-
     values = tibble(trait = binaryGBTraits, type = "main"),
     names = "trait",
     # write json file
-    tar_target(json, writeDataJSON(values, mcc, treesSubset, 
+    tar_target(json, writeDataJSON(gb, mcc, treesSubset, 
                                    fileTrees, trait, type)),
     # fit model to data
     tar_target(fit, fitBEAST(trait, json, fileXML, type)),
-    # load log file
-    tar_target(log, getBEASTLog(trait, fit, type)),
     # extract effective sample size for posterior
-    tar_target(ess, bind_cols(
-      tibble(trait = trait),
-      calc_esses(
-        remove_burn_ins(log, burn_in_fraction = 0.1), sample_interval = 1000
-        )
-      )
-    ),
+    tar_target(ess, extractESS(trait, fit, type)),
     # get imputation results in tibble
-    tar_target(imp, getImputations(trait, fit, values, type)),
+    tar_target(imp, getImputations(trait, fit, gb, type)),
     # plot imputation results on tree
-    tar_target(plot, plotImputations(trait, mcc, imp))
+    tar_target(plot, plotImputations(trait, mcc, imp)),
+    # clean up files to save storage
+    # (include plot & ess to ensure this happens at the end)
+    tar_target(cleanUp, cleanUpFiles(trait, plot, ess, type))
   )
 
 # targets for GB validation
