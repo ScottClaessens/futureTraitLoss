@@ -14,7 +14,14 @@ tar_option_set(
 
 # get binary grambank traits
 binaryTraits <- 
-  read_csv("data/grambank-v1.0.3/grambank-grambank-7ae000c/cldf/codes.csv") %>% 
+  read_csv(
+    paste0(
+      # Grambank version 1.0.3
+      "https://raw.githubusercontent.com/grambank/grambank/",
+      "7ae000cf740f93cdb3e4ec67010668d6795337a9/cldf/codes.csv"
+      ),
+    show_col_types = FALSE
+    ) %>% 
   group_by(Parameter_ID) %>% 
   summarise(n = n()) %>% 
   filter(n == 2) %>% 
@@ -72,21 +79,8 @@ validationTargets <-
 # pipeline
 list(
   # files
-  tar_target(
-    fileTrees,
-    "data/edge6636-March-2023-no-metadata.trees",
-    format = "file"
-    ),
-  tar_target(
-    fileValues, 
-    "data/grambank-v1.0.3/grambank-grambank-7ae000c/cldf/values.csv", 
-    format = "file"
-    ),
-  tar_target(
-    fileXML,
-    "xml/imputeTipsBEAST_multiTree_strictClock.xml",
-    format = "file"
-    ),
+  tar_target(fileTrees, "data/edge6636-March-2023-no-metadata.trees", format = "file"),
+  tar_target(fileXML, "xml/imputeTipsBEAST_multiTree_strictClock.xml", format = "file"),
   tar_target(filePhySignal, "data/phySignal.csv", format = "file"),
   # load posterior treeset
   tar_target(trees, read.nexus(fileTrees)),
@@ -97,7 +91,7 @@ list(
   # get phylogenetic distance matrix from mcc tree
   tar_target(phyDistMat, cophenetic.phylo(mcc)),
   # load grambank data
-  tar_target(values, getGBValues(fileValues, mcc)),
+  tar_target(values, getGBValues(mcc)),
   # load phylogenetic signal data
   tar_target(phySignal, read_csv(filePhySignal)),
   # run main imputations
