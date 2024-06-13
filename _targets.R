@@ -84,7 +84,7 @@ list(
     ),
   tar_target(
     fileXML,
-    "files/xml/imputeTipsBEAST_multiTree_strictClock.xml",
+    "xml/imputeTipsBEAST_multiTree_strictClock.xml",
     format = "file"
     ),
   tar_target(filePhySignal, "data/phySignal.csv", format = "file"),
