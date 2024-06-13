@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+_targets/
+beast/
+files/
+data/grambank-v1.0.3/
+data/edge6636-March-2023-no-metadata.trees
