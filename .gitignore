@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 _targets/
-beast/
-files/
+BEAST.v2.7.6.Windows/
 data/edge6636-March-2023-no-metadata.trees
 data/subset.trees
