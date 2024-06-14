@@ -1,7 +1,7 @@
 # fit beast model
-fitBEAST <- function(trait, json, fileXML, type, id = NULL, numThreads = 1) {
+fitBEAST <- function(trait, json, fileXML, id, numThreads = 1) {
   # trait label
-  trait <- paste0(trait, ifelse(type == "main", "", paste0("_", id)))
+  trait <- paste0(trait, "_", id)
   # get json file location
   fileJSON <- paste0("temp/", trait, ".json")
   # write command

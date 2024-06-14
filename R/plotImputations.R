@@ -1,7 +1,11 @@
 # plot imputations on mcc tree
 plotImputations <- function(trait, mcc, imp) {
-  # get heights for plot
-  imp <- mutate(imp, height = ifelse(Value == "?", Imputation, 1))
+  imp <-
+    imp %>%
+    # for main imputations only
+    filter(id == 0) %>%
+    # get heights for plot
+    mutate(height = ifelse(Value == "?", Imputation, 1))
   # plot on tree
   out <-
     ggtree(mcc, size = 0.01, layout = "circular") +

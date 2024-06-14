@@ -6661,7 +6661,7 @@ spec="Alignment">
 
     <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
 
-    <run id="mcmc" spec="MCMC" chainLength="500000">
+    <run id="mcmc" spec="MCMC" chainLength="50000">
         <state id="state" spec="State" storeEvery="5000">
             <stateNode id="treeIndex.t:tree" spec="parameter.IntegerParameter" lower="0" upper="1">0</stateNode>
             <stateNode id="Tree.t:tree" spec="fixedtreeanalysis.evolution.tree.IndexedTreeFromSet" index="@treeIndex.t:tree" treeSetFile="$(treesFile)">

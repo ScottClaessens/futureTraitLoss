@@ -1,16 +1,9 @@
 # extract effective sample sizes from beast log file
-extractESS <- function(trait, fit, type, id = NULL) {
+extractESS <- function(trait, fit, id) {
   # get beast log
   log <-
     parse_beast_tracelog_file(
-      paste0(
-        "temp/log_",
-        paste0(
-          trait,
-          ifelse(type == "main", "", paste0("_", id))
-        ), 
-        ".log"
-      )
+      paste0("temp/log_", paste0(trait, "_", id), ".log")
     )
   # extract ESS
   bind_cols(

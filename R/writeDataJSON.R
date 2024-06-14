@@ -1,7 +1,10 @@
 # write json file
-writeDataJSON <- function(gb, mcc, treesSubset, fileTrees, trait, type, id = NULL) {
-  # if type = "validation", id must be set
-  if (type == "validation" & is.null(id)) stop("Must set ID for validations.")
+writeDataJSON <- function(gb, mcc, treesSubset, fileTrees, trait, id) {
+  # if validation, remove validation language
+  if (id != 0) {
+    valLang <- getValidationLanguage(gb, trait, id)
+    gb <- removeValidationLanguage(gb, trait, valLang)
+  }
   # get values for trait from n = 2383 languages
   values <- 
     gb %>% 
@@ -24,7 +27,7 @@ writeDataJSON <- function(gb, mcc, treesSubset, fileTrees, trait, type, id = NUL
     str_replace_all(fixed(":"), fixed("=")) %>%
     str_remove(fixed('{')) %>%
     str_remove(fixed('}'))
-  filename <- paste0(trait, ifelse(type == "main", "", paste0("_", id)))
+  filename <- paste0(trait, "_", id)
   out <- paste0(
     '{"data":"', out, '", ',
     '"treesFile":"', getwd(), "/data/subset.trees", '", ',

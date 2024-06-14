@@ -1,9 +1,6 @@
 # remove validation language
-removeValidationLanguage <- function(values, trait, valLang) {
+removeValidationLanguage <- function(gb, trait, valLang) {
   # set validation language to missing
-  values[
-    values$Language_ID == valLang & values$Parameter_ID == trait, 
-    "Value"
-    ] <- "?"
-  return(values)
+  gb[gb$Language_ID == valLang & gb$Parameter_ID == trait, "Value"] <- "?"
+  return(gb)
 }

@@ -1,12 +1,8 @@
 # get imputations in tibble
-getImputations <- function(trait, fit, gb, type, id = NULL) {
+getImputations <- function(trait, fit, gb, id, ess) {
   # get tree with reconstructed tips
   tree <- read.beast(
-    file = paste0(
-      "temp/imputations_", 
-      paste0(trait, ifelse(type == "main", "", paste0("_", id))),
-      ".trees"
-      )
+    file = paste0("temp/imputations_", paste0(trait, "_", id), ".trees")
   )
   # remove 10% burn in
   nTrees <- length(tree)
@@ -33,14 +29,19 @@ getImputations <- function(trait, fit, gb, type, id = NULL) {
       label = Language_ID, 
       Value = Value
     )
-  imp %>%
+  out <-
+    imp %>%
     group_by(label) %>%
     summarise(Imputation = mean(location)) %>%
     left_join(values, by = "label") %>%
     mutate(
       Value = factor(ifelse(is.na(Value), "?", Value), levels = c("0","1","?")),
-      Trait = trait
+      Trait = trait,
+      id = id
       ) %>%
     rename(Language_ID = label) %>%
-    dplyr::select(Trait, everything())
+    dplyr::select(Trait, id, everything())
+  # clean up files after all computation is finished
+  cleanUpFiles(trait, ess, id)
+  return(out)
 }
