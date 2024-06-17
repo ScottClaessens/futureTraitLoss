@@ -32,22 +32,14 @@ gbTargets <-
   tar_map(
     # iterate over binary traits
     values = expand_grid(trait = binaryGBTraits[1]),
-    # write json file
-    tar_target(json, writeDataJSON(gb, mcc, treesSubset, fileTrees, trait, id),
-               pattern = map(id)),
-    # fit model to data
-    tar_target(fit, fitBEAST(trait, json, fileXML, id),
-               pattern = map(json, id)),
-    # extract effective sample size for posterior
-    tar_target(ess, extractESS(trait, fit, id),
-               pattern = map(fit, id)),
-    # get imputation results in tibble
-    tar_target(imp, getImputations(trait, fit, gb, id, ess),
-               pattern = map(fit, id, ess)),
+    # fit models and get imputation results in tibble
+    tar_target(imp, getImputations(gb, mcc, treesSubset, fileTrees, 
+                                   fileXML, trait, id), pattern = map(id)),
     # plot imputation results on tree
     tar_target(plot, plotImputations(trait, mcc, imp)),
     # get result for validations
-    tar_target(valResult, getValidationResult(trait, gb, imp, phyDistMat, phySignal))
+    tar_target(valResult, getValidationResult(trait, gb, imp, 
+                                              phyDistMat, phySignal))
   )
 
 # pipeline
@@ -80,8 +72,6 @@ list(
   tar_target(id, 0:2),
   ## run imputations
   gbTargets,
-  # extract effective sample sizes
-  tar_combine(ess, gbTargets[["ess"]]),
   # get validation results
   tar_combine(valResults, gbTargets[["valResult"]]),
   # plot validation results

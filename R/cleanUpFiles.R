@@ -1,5 +1,5 @@
 # clean up files
-cleanUpFiles <- function(trait, ess, id) {
+cleanUpFiles <- function(trait, id) {
   # get trait label
   trait <- paste0(trait, "_", id)
   # delete beast output files

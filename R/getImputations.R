@@ -1,5 +1,14 @@
 # get imputations in tibble
-getImputations <- function(trait, fit, gb, id, ess) {
+getImputations <- function(gb, mcc, treesSubset, fileTrees, 
+                           fileXML, trait, id) {
+  # write json file
+  json <- writeDataJSON(gb, mcc, treesSubset, fileTrees, trait, id)
+  # fit beast model
+  fit <- fitBEAST(fileXML, trait, id)
+  # extract effective sample sizes
+  ess <- 
+    extractESS(trait, id) %>%
+    rename_with(function(x) ifelse(x == "trait", "Trait", paste0("ess_", x)))
   # get tree with reconstructed tips
   tree <- read.beast(
     file = paste0("temp/imputations_", paste0(trait, "_", id), ".trees")
@@ -40,8 +49,9 @@ getImputations <- function(trait, fit, gb, id, ess) {
       id = id
       ) %>%
     rename(Language_ID = label) %>%
-    dplyr::select(Trait, id, everything())
+    dplyr::select(Trait, id, everything()) %>%
+    left_join(ess, by = "Trait")
   # clean up files after all computation is finished
-  cleanUpFiles(trait, ess, id)
+  cleanUpFiles(trait, id)
   return(out)
 }
