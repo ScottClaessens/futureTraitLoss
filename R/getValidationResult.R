@@ -44,6 +44,7 @@ getValidationResult <- function(trait, gb, imp, phyDistMat, phySignal) {
       transmute(
         trait = Trait,
         id = id,
+        N = N,
         lang = valLang,
         trueValue = Value,
         imputedValue = Imputation,

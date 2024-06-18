@@ -1,15 +1,14 @@
 # fit model to validation results: phylogenetic signal
 fitValidationModel3 <- function(valResults) {
   valResults %>%
-    # we took 90 posterior samples
     # error = how many posterior samples were incorrect?
-    mutate(error = as.integer(error * 90)) %>%
+    mutate(error = as.integer(error * N)) %>%
     # remove traits that do not have a phylogenetic signal estimate
     drop_na(traitPhySignal) %>%
     # fit model
     brm(
       data = .,
-      formula = error | trials(90) ~ 1 + traitPhySignal + (1 | trait),
+      formula = error | trials(N) ~ 1 + traitPhySignal + (1 | trait),
       family = binomial,
       prior = c(prior(normal(0, 1), class = Intercept),
                 prior(normal(0, 1), class = b),

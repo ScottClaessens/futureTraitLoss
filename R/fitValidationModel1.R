@@ -1,13 +1,12 @@
 # fit model to validation results: trait coverage
 fitValidationModel1 <- function(valResults) {
   valResults %>%
-    # we took 90 posterior samples
     # error = how many posterior samples were incorrect?
-    mutate(error = as.integer(error * 90)) %>%
+    mutate(error = as.integer(error * N)) %>%
     # fit model
     brm(
       data = .,
-      formula = error | trials(90) ~ 1 + traitCoverage + (1 | trait),
+      formula = error | trials(N) ~ 1 + traitCoverage + (1 | trait),
       family = binomial,
       prior = c(prior(normal(0, 1), class = Intercept),
                 prior(normal(0, 1), class = b),

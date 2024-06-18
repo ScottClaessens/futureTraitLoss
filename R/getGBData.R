@@ -8,6 +8,6 @@ getGBData <- function(mcc) {
     ), 
     show_col_types = FALSE
     ) %>%
-    # remove ~262 languages not represented on the global tree
+    # remove 262 languages not represented on the global tree
     filter(Language_ID %in% mcc$tip.label)
 }

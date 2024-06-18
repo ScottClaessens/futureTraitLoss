@@ -41,7 +41,10 @@ getImputations <- function(gb, mcc, treesSubset, fileTrees,
   out <-
     imp %>%
     group_by(label) %>%
-    summarise(Imputation = mean(location)) %>%
+    summarise(
+      Imputation = mean(location),
+      N = n()
+      ) %>%
     left_join(values, by = "label") %>%
     mutate(
       Value = factor(ifelse(is.na(Value), "?", Value), levels = c("0","1","?")),

@@ -31,7 +31,7 @@ binaryGBTraits <-
 gbTargets <-
   tar_map(
     # iterate over binary traits
-    values = expand_grid(trait = binaryGBTraits[1]),
+    values = expand_grid(trait = binaryGBTraits[1:2]),
     # fit models and get imputation results in tibble
     tar_target(imp, getImputations(gb, mcc, treesSubset, fileTrees, 
                                    fileXML, trait, id), pattern = map(id)),
@@ -51,6 +51,7 @@ list(
   tar_target(fileTrees, "data/edge6636-March-2023-no-metadata.trees", format = "file"),
   tar_target(fileXML, "xml/imputeTipsBEAST_multiTree_strictClock.xml", format = "file"),
   tar_target(filePhySignal, "data/phySignal.csv", format = "file"),
+  tar_target(fileEndanger, "data/endanger.rds", format = "file"),
   # load posterior treeset
   tar_target(trees, read.nexus(fileTrees)),
   # random subset of n trees for analysis
@@ -65,6 +66,8 @@ list(
   tar_target(dplace, getDPLACEData(mcc)),
   # load phylogenetic signal data
   tar_target(phySignal, read_csv(filePhySignal, show_col_types = FALSE)),
+  # load endangerment data
+  tar_target(endanger, readRDS(fileEndanger)),
   
   ### 2. Grambank imputations
   
@@ -72,22 +75,33 @@ list(
   tar_target(id, 0:2),
   ## run imputations
   gbTargets,
-  # get validation results
+  # combine results
+  tar_combine(
+    imp,
+    gbTargets[["imp"]],
+    command = bind_rows(!!!.x) %>% filter(id == 0)
+    ),
   tar_combine(valResults, gbTargets[["valResult"]]),
   # plot validation results
-  #tar_target(plotVal, plotValidation(valResults)),
+  tar_target(plotVal, plotValidation(valResults)),
   # calculate auc
-  tar_target(auc, calculateAUC(valResults))
+  #tar_target(auc, calculateAUC(valResults)),
   # fit models analysing validation results
-  #tar_target(valModel1, fitValidationModel1(valResults)),
-  #tar_target(valModel2, fitValidationModel2(valResults)),
-  #tar_target(valModel3, fitValidationModel3(valResults)),
-  #tar_target(valModel4, fitValidationModel4(valResults)),
-  ## plot models anlysing validation results
-  #tar_target(plotValModel1, plotValidationModel1(valModel1)),
-  #tar_target(plotValModel2, plotValidationModel2(valModel2)),
-  #tar_target(plotValModel3, plotValidationModel3(valModel3)),
-  #tar_target(plotValModel4, plotValidationModel4(valModel4)),
-  ## plot binned imputed values
-  #tar_target(plotValBin, plotBinned(valResults))
+  tar_target(valModel1, fitValidationModel1(valResults)),
+  tar_target(valModel2, fitValidationModel2(valResults)),
+  tar_target(valModel3, fitValidationModel3(valResults)),
+  tar_target(valModel4, fitValidationModel4(valResults)),
+  # plot models analysing validation results
+  tar_target(plotValModel1, plotValidationModel1(valModel1)),
+  tar_target(plotValModel2, plotValidationModel2(valModel2)),
+  tar_target(plotValModel3, plotValidationModel3(valModel3)),
+  tar_target(plotValModel4, plotValidationModel4(valModel4)),
+  # plot binned imputed values
+  tar_target(plotValBin, plotBinned(valResults)),
+  # plot trait loss
+  tar_target(plotLoss, plotTraitLoss(endanger, imp)),
+  # plot proportion in grambank and proportion in imputations
+  tar_target(plotProp, plotProportions(endanger, imp)),
+  # predict disappearance times
+  tar_target(predDisappear, predictDisappearanceTimes(endanger, imp))
 )

@@ -2,15 +2,14 @@
 fitValidationModel2 <- function(valResults) {
   valResults %>%
     mutate(
-      # we took 90 posterior samples
       # error = how many posterior samples were incorrect?
-      error = as.integer(error * 90),
+      error = as.integer(error * N),
       trueValue = factor(trueValue)
     ) %>%
     # fit model
     brm(
       data = .,
-      formula = error | trials(90) ~ 0 + trueValue + 
+      formula = error | trials(N) ~ 0 + trueValue + 
         trueValue:traitPropObs1 + (1 | trait),
       family = binomial,
       prior = c(prior(normal(0, 1), class = b),
