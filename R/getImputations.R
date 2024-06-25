@@ -1,8 +1,8 @@
 # get imputations in tibble
-getImputations <- function(gb, mcc, treesSubset, fileTrees, 
+getImputations <- function(d, mcc, treesSubset, fileTrees, 
                            fileXML, trait, id) {
   # write json file
-  json <- writeDataJSON(gb, mcc, treesSubset, fileTrees, trait, id)
+  json <- writeDataJSON(d, mcc, treesSubset, fileTrees, trait, id)
   # fit beast model
   fit <- fitBEAST(fileXML, trait, id)
   # extract effective sample sizes
@@ -32,7 +32,7 @@ getImputations <- function(gb, mcc, treesSubset, fileTrees,
   }
   # summarise posterior tip reconstructions and match with real data
   values <- 
-    gb %>% 
+    d %>% 
     filter(Parameter_ID == trait) %>% 
     transmute(
       label = Language_ID, 

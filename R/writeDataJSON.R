@@ -1,13 +1,13 @@
 # write json file
-writeDataJSON <- function(gb, mcc, treesSubset, fileTrees, trait, id) {
+writeDataJSON <- function(d, mcc, treesSubset, fileTrees, trait, id) {
   # if validation, remove validation language
   if (id != 0) {
-    valLang <- getValidationLanguage(gb, trait, id)
-    gb <- removeValidationLanguage(gb, trait, valLang)
+    valLang <- getValidationLanguage(d, trait, id)
+    d <- removeValidationLanguage(d, trait, valLang)
   }
   # get values for trait from n = 2383 languages
   values <- 
-    gb %>% 
+    d %>% 
     filter(Parameter_ID == trait) %>%
     transmute(
       Taxon = Language_ID,

@@ -9,8 +9,8 @@ tar_source()
 # set targets options
 tar_option_set(
   packages = c("ape","brms","dplyr","cowplot","ggplot2","ggtree","ggtreeExtra",
-               "phangorn","pROC","readr","rjson","tracerer","treeio")
-  )
+               "phangorn","pROC","readr","readxl","rjson","tracerer","treeio")
+)
 
 # get binary grambank traits
 binaryGBTraits <- 
@@ -27,18 +27,18 @@ binaryGBTraits <-
   filter(n == 2) %>% 
   pull(Parameter_ID)
 
-# targets for grambank imputations
-gbTargets <-
+# targets for imputations
+impTargets <-
   tar_map(
     # iterate over binary traits
-    values = expand_grid(trait = binaryGBTraits[1:2]),
+    values = expand_grid(trait = "Exogamous"),
     # fit models and get imputation results in tibble
-    tar_target(imp, getImputations(gb, mcc, treesSubset, fileTrees, 
+    tar_target(imp, getImputations(d, mcc, treesSubset, fileTrees, 
                                    fileXML, trait, id), pattern = map(id)),
     # plot imputation results on tree
     tar_target(plot, plotImputations(trait, mcc, imp)),
     # get result for validations
-    tar_target(valResult, getValidationResult(trait, gb, imp, 
+    tar_target(valResult, getValidationResult(trait, d, imp, 
                                               phyDistMat, phySignal))
   )
 
@@ -52,6 +52,7 @@ list(
   tar_target(fileXML, "xml/imputeTipsBEAST_multiTree_strictClock.xml", format = "file"),
   tar_target(filePhySignal, "data/phySignal.csv", format = "file"),
   tar_target(fileEndanger, "data/endanger.rds", format = "file"),
+  tar_target(fileDPLACE, "data/dplaceEdgeTree.xlsx", format = "file"),
   # load posterior treeset
   tar_target(trees, read.nexus(fileTrees)),
   # random subset of n trees for analysis
@@ -63,25 +64,27 @@ list(
   # load grambank data
   tar_target(gb, getGBData(mcc)),
   # load dplace data
-  tar_target(dplace, getDPLACEData(mcc)),
+  tar_target(dplace, getDPLACEData(fileDPLACE, mcc)),
+  # combine grambank and dplace data
+  tar_target(d, combineData(gb, dplace)),
   # load phylogenetic signal data
   tar_target(phySignal, read_csv(filePhySignal, show_col_types = FALSE)),
   # load endangerment data
   tar_target(endanger, readRDS(fileEndanger)),
   
-  ### 2. Grambank imputations
+  ### 2. Imputations
   
   # ids to loop over (0 = main, 1:n = validations)
   tar_target(id, 0:2),
   ## run imputations
-  gbTargets,
+  impTargets,
   # combine results
   tar_combine(
     imp,
-    gbTargets[["imp"]],
+    impTargets[["imp"]],
     command = bind_rows(!!!.x) %>% filter(id == 0)
     ),
-  tar_combine(valResults, gbTargets[["valResult"]]),
+  tar_combine(valResults, impTargets[["valResult"]]),
   # plot validation results
   tar_target(plotVal, plotValidation(valResults)),
   # calculate auc

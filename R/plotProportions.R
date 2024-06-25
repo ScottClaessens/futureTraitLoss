@@ -9,8 +9,11 @@ plotProportions <- function(endanger, imp) {
       probNotSleep_40      = 1 - (`P[Y=6].40` + `P[Y=7].40`),
       probNotSleep_80      = 1 - (`P[Y=6].80` + `P[Y=7].80`)
     ) %>% 
-    # join imputed data
-    right_join(imp, by = c("glottocode" = "Language_ID")) %>%
+    # join imputed grambank data
+    right_join(
+      filter(imp, str_starts(Trait, fixed("GB"))), 
+      by = c("glottocode" = "Language_ID")
+      ) %>%
     # drop cases without matches
     drop_na(EGIDS:probNotSleep_80) %>%
     group_by(Trait) %>%

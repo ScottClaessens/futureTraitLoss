@@ -1,10 +1,10 @@
 # get validation result
-getValidationResult <- function(trait, gb, imp, phyDistMat, phySignal) {
+getValidationResult <- function(trait, d, imp, phyDistMat, phySignal) {
   # create function to calculate distance from language to nearest observed tip
-  calculateNearestPhyDistance <- function(trait, gb, valLang) {
+  calculateNearestPhyDistance <- function(trait, d, valLang) {
     # get all observed tips
     observedTips <- 
-      gb %>% 
+      d %>% 
       # for current trait, excluding validation language, and 
       # excluding languages with missing data
       filter(Parameter_ID == trait & Language_ID != valLang & Value != "?") %>%
@@ -21,18 +21,18 @@ getValidationResult <- function(trait, gb, imp, phyDistMat, phySignal) {
     mutate(
       # validation language
       valLang = map(
-        id, function(x) getValidationLanguage(gb, trait, id = x)
+        id, function(x) getValidationLanguage(d, trait, id = x)
         ),
       # phylogenetic distance to nearest neighbour
       langDistNearestObs = map(
-        valLang, function(x) calculateNearestPhyDistance(trait, gb, valLang = x)
+        valLang, function(x) calculateNearestPhyDistance(trait, d, valLang = x)
         )
       ) %>%
     unnest(c(valLang, langDistNearestObs))
     # calculate trait level stats
-    traitCoverage <- mean(gb$Value[gb$Parameter_ID == trait] != "?")
+    traitCoverage <- mean(d$Value[d$Parameter_ID == trait] != "?")
     obsTraitValues <- 
-      gb %>%
+      d %>%
       filter(Value != "?" & Parameter_ID == trait) %>%
       pull(Value)
     traitPropObs0 <- mean(obsTraitValues == "0")

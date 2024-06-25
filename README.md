@@ -16,8 +16,8 @@ install the following packages:
 ```
 install.packages(c("ape","brms","dplyr","cowplot","ggplot2",
                    "ggtree","ggtreeExtra","phangorn","pROC",
-                   "readr","rjson","tarchetypes","targets",
-                   "tidyverse","tracerer","treeio"))
+                   "readr","readxl","rjson","tarchetypes",
+                   "targets","tidyverse","tracerer","treeio"))
 ```
 
 ### Executing code
