@@ -10,8 +10,8 @@ language loss (see [here](https://www.nature.com/articles/s41559-021-01604-y)).
 
 ### Installation guide
 
-To run this code, you will need to [install R](https://www.r-project.org/) and
-install the following packages:
+To run this code, you will first need to [install R](https://www.r-project.org/)
+and install the following packages:
 
 ```
 install.packages(c("ape","brms","dplyr","cowplot","ggplot2",
@@ -20,9 +20,17 @@ install.packages(c("ape","brms","dplyr","cowplot","ggplot2",
                    "targets","tidyverse","tracerer","treeio"))
 ```
 
+Then you will need to download BEAST2 and add it to this repository. See here 
+for more details: https://www.beast2.org/
+
+Finally, you will need to ensure that BEAST2 has the following packages 
+installed: `FixedTreeAnalysis` and `BEAST_CLASSIC`. See here for details on how
+to install packages: http://beast2.org/managing-packages/
+
 ### Executing code
 
-1. Set the working directory to this code repository `setwd("myPath/futureLossTraits")`
+1. Set the working directory to this code repository 
+`setwd("myPath/futureLossTraits")`
 2. Load the `targets` package with `library(targets)`
 3. To run the analysis pipeline, run `tar_make()`
 4. To load individual targets into your environment, run `tar_load()` etc.

@@ -31,7 +31,7 @@ binaryGBTraits <-
 impTargets <-
   tar_map(
     # iterate over binary traits
-    values = expand_grid(trait = "Exogamous"),
+    values = expand_grid(trait = binaryGBTraits),
     # fit models and get imputation results in tibble
     tar_target(imp, getImputations(d, mcc, treesSubset, fileTrees, 
                                    fileXML, trait, id), pattern = map(id)),
@@ -75,7 +75,7 @@ list(
   ### 2. Imputations
   
   # ids to loop over (0 = main, 1:n = validations)
-  tar_target(id, 0:2),
+  tar_target(id, 0:50),
   ## run imputations
   impTargets,
   # combine results
@@ -88,7 +88,7 @@ list(
   # plot validation results
   tar_target(plotVal, plotValidation(valResults)),
   # calculate auc
-  #tar_target(auc, calculateAUC(valResults)),
+  tar_target(auc, calculateAUC(valResults)),
   # fit models analysing validation results
   tar_target(valModel1, fitValidationModel1(valResults)),
   tar_target(valModel2, fitValidationModel2(valResults)),
