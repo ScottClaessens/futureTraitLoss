@@ -6,6 +6,11 @@ library(tarchetypes)
 library(tidyverse)
 tar_source()
 
+BEAST_COMMAND <- 'BEAST.v2.7.7.Windows/BEAST/bat/beast.bat'
+BEAST_COMMAND <- 'beast' # -beagle -beagle_SSE'
+
+NUMBER_OF_VALIDATIONS <- 50
+
 # set targets options
 tar_option_set(
   packages = c("ape","brms","dplyr","cowplot","ggplot2","ggtree","ggtreeExtra",
@@ -75,7 +80,7 @@ list(
   ### 2. Imputations
   
   # ids to loop over (0 = main, 1:n = validations)
-  tar_target(id, 0:50),
+  tar_target(id, 0:NUMBER_OF_VALIDATIONS),
   ## run imputations
   impTargets,
   # combine results
