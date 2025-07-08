@@ -28,9 +28,13 @@ binaryGBTraits <-
     show_col_types = FALSE
     ) %>% 
   group_by(Parameter_ID) %>% 
-  summarise(n = n()) %>% 
-  filter(n == 2) %>% 
   pull(Parameter_ID)
+
+# replace multistate variables with binarised variables.
+# multistate_parameters and binary_parameters are set in binariseGB.R
+binaryGBTraits <- binaryGBTraits[!binaryGBTraits %in% multistate_parameters]
+binaryGBTraits <- c(binaryGBTraits, binary_parameters)
+
 
 # targets for imputations
 impTargets <-
