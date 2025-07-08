@@ -13375,7 +13375,7 @@ spec="Alignment">
             <log idref="prior"/>
         </logger>
         <logger id="treelog.t:tree" spec="Logger" fileName="$(treesOutFile)" logEvery="500000" mode="tree">
-            <log id="TreeWithMetaDataLogger.t:tree" spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@Tree.t:tree"/>
+            <log id="TreeWithMetaDataLogger.t:tree" spec="beast.base.evolution.TreeWithMetaDataLogger" dp="8" tree="@Tree.t:tree"/>
         </logger>
         <logger id="treeWithTraitLogger.gbTrait" spec="Logger" fileName="$(imputationsFile)" logEvery="5000" mode="tree">
             <log id="treeWithTraitLoggerItem.t:tree" spec="beastclassic.evolution.tree.TreeWithTraitLogger" tree="@Tree.t:tree">

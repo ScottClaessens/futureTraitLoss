@@ -8,7 +8,7 @@ fitBEAST <- function(fileXML, trait, id, numThreads = 1) {
   command <- 
     paste0(
       # run beast
-      "BEAST.v2.7.7.Windows/BEAST/bat/beast.bat ",
+      BEAST_COMMAND, " ",   # BEAST_COMMAND is injected by targets here from global namespace
       # number of threads
       "-threads ", numThreads, " ",
       # json file
