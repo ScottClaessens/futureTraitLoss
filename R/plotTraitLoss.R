@@ -2,8 +2,6 @@ plotTraitLoss <- function(endanger, imp) {
   # join imputations and endangerment probabilities
   d <-
     endanger %>%
-    # grambank traits only
-    filter(str_starts(trait, fixed("GB"))) %>%
     # calculate probabilities of NOT being sleeping (EGIDS >= 9)
     transmute(
       glottocode, EGIDS,
