@@ -4,12 +4,23 @@ library(crew)
 library(targets)
 library(tarchetypes)
 library(tidyverse)
+
+tar_option_set(
+  controller = crew_controller_local(workers = 8)
+)
+
 tar_source()
 
 BEAST_COMMAND <- 'BEAST.v2.7.7.Windows/BEAST/bat/beast.bat'
 BEAST_COMMAND <- 'beast' # -beagle -beagle_SSE'
 
-NUMBER_OF_VALIDATIONS <- 50
+# keep beast files or not:
+#   if TRUE then all xml/log/trees files are kept (for debugging purposes).
+#   otherwise they're removed if KEEP_BEAST_FILES is not set or is set to FALSE
+KEEP_BEAST_FILES <- FALSE
+
+
+NUMBER_OF_VALIDATIONS <- 2
 
 # set targets options
 tar_option_set(
@@ -19,7 +30,7 @@ tar_option_set(
 
 # get binary grambank traits
 binaryGBTraits <- 
-  read_csv(
+  readr::read_csv(
     paste0(
       # Grambank version 1.0.3
       "https://raw.githubusercontent.com/grambank/grambank/",
@@ -33,7 +44,9 @@ binaryGBTraits <-
 # replace multistate variables with binarised variables.
 # multistate_parameters and binary_parameters are set in binariseGB.R
 binaryGBTraits <- binaryGBTraits[!binaryGBTraits %in% multistate_parameters]
-binaryGBTraits <- c(binaryGBTraits, binary_parameters)
+binaryGBTraits <- c(binaryGBTraits, binary_parameters) |> unique()
+
+#print("DEBUG"); binaryGBTraits <- binaryGBTraits[1:3]
 
 
 # targets for imputations
