@@ -54,7 +54,10 @@ getImputations <- function(d, mcc, treesSubset, fileTrees,
     rename(Language_ID = label) %>%
     dplyr::select(Trait, id, everything()) %>%
     left_join(ess, by = "Trait")
-  # clean up files after all computation is finished
-  cleanUpFiles(trait, id)
+  
+  # clean up files after all computation is finished, unless KEEP_BEAST_FILES is set.
+  if (!exists("KEEP_BEAST_FILES") || !isTRUE(KEEP_BEAST_FILES)) {
+    cleanUpFiles(trait, id)
+  }
   return(out)
 }
