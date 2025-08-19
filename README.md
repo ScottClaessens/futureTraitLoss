@@ -24,9 +24,7 @@ install.packages(c(
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 ## BiocManager::install("BiocUpgrade") ## you may need this
-BiocManager::install("treeio")
-BiocManager::install("ggtree")
-BiocManager::install("ggtreeExtra")
+BiocManager::install(c("treeio", "ggtree", "ggtreeExtra"))
 ```
 
 Then you will need to download BEAST2 and add it to this repository. See here 
