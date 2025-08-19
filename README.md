@@ -13,11 +13,20 @@ language loss (see [here](https://www.nature.com/articles/s41559-021-01604-y)).
 To run this code, you will first need to [install R](https://www.r-project.org/)
 and install the following packages:
 
-```
-install.packages(c("ape","brms","dplyr","cowplot","ggplot2",
-                   "ggtree","ggtreeExtra","phangorn","pROC",
-                   "readr","readxl","rjson","tarchetypes",
-                   "targets","tidyverse","tracerer","treeio"))
+```R
+install.packages(c(
+    "ape","brms","dplyr","cowplot","ggplot2", "phangorn","pROC",
+    "readr","readxl","rjson","tarchetypes",
+    "targets","tidyverse","tracerer"
+))
+
+# treeio/ggtree/ggtreeExtra need to be installed like this:
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+## BiocManager::install("BiocUpgrade") ## you may need this
+BiocManager::install("treeio")
+BiocManager::install("ggtree")
+BiocManager::install("ggtreeExtra")
 ```
 
 Then you will need to download BEAST2 and add it to this repository. See here 
