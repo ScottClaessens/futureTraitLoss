@@ -1,32 +1,68 @@
+#!/usr/bin/env Rscript
 # load libraries and functions
 options(tidyverse.quiet = TRUE)
 library(crew)
+library(crew.cluster)
 library(targets)
 library(tarchetypes)
 library(tidyverse)
 
-tar_option_set(
-  controller = crew_controller_local(workers = 8)
+PACKAGES <- c(
+    "ape","brms","dplyr","cowplot","ggplot2", "stringr", "tidyverse", "tidyr", 
+    "ggtree","ggtreeExtra",
+    "phangorn","pROC","readr","readxl","rjson","tracerer","treeio"
 )
+
 
 tar_source()
 
-BEAST_COMMAND <- 'BEAST.v2.7.7.Windows/BEAST/bat/beast.bat'
-BEAST_COMMAND <- 'beast' # -beagle -beagle_SSE'
+dir.create('plots', showWarnings=FALSE)
+dir.create('plots/validation', showWarnings=FALSE)
+
+tar_option_set(error = "null", packages = PACKAGES)
+
+ONCLUSTER <- FALSE   # are we running on the MPG slurm cluster in Leipzig?
+
+# number of workers on the cluster
+WORKERS = 50
 
 # keep beast files or not:
 #   if TRUE then all xml/log/trees files are kept (for debugging purposes).
 #   otherwise they're removed if KEEP_BEAST_FILES is not set or is set to FALSE
 KEEP_BEAST_FILES <- FALSE
 
+NUMBER_OF_VALIDATIONS <- 10
 
-NUMBER_OF_VALIDATIONS <- 2
+# BEAST_COMMAND <- 'BEAST.v2.7.7.Windows/BEAST/bat/beast.bat'   # Windows
+BEAST_COMMAND <- 'beast -beagle_SSE' # -beagle -beagle_SSE'
 
-# set targets options
-tar_option_set(
-  packages = c("ape","brms","dplyr","cowplot","ggplot2","ggtree","ggtreeExtra",
-               "phangorn","pROC","readr","readxl","rjson","tracerer","treeio")
-)
+if (ONCLUSTER) {
+    tar_option_set(controller = crew_controller_slurm(
+        #host = '172.17.32.201',  # cdlce2.eva.mpg.de
+        #port = 22,
+        workers = WORKERS,
+        options_cluster = crew.cluster::crew_options_slurm(
+            partition = 'gpu', #'standard',
+            verbose = TRUE,
+            time_minutes = 7200,
+            memory_gigabytes_per_cpu = 8,
+            script_lines = c(
+                "#SBATCH --get-user-env",
+                "#SBATCH --cpus-per-task=4",
+                "#SBATCH --nodes=1",
+                "#SBATCH --export=ALL",
+                #"#SBATCH --nodelist=dlcenode[01-14]",
+                "module load BEAST/2.7.7",
+                "module load R"
+            ),
+            log_output = "/home/simon_greenhill/jobs/futureTraitLoss/slurm_output.%A.txt",
+            log_error = "/home/simon_greenhill/jobs/futureTraitLoss/slurm_error.%A.txt"
+        )
+    ))
+    
+    BEAST_COMMAND <- 'LD_LIBRARY_PATH=/mnt/dlce/data/tools/beagle-lib//beagle-lib-oldcpu-cuda-3a8d3e6/ /mnt/dlce/data/tools/beast/2.7.7/beast/bin/beast -beagle -beagle_SSE'
+}
+
 
 # get binary grambank traits
 binaryGBTraits <- 
@@ -55,8 +91,10 @@ impTargets <-
     # iterate over binary traits
     values = expand_grid(trait = binaryGBTraits),
     # fit models and get imputation results in tibble
-    tar_target(imp, getImputations(d, mcc, treesSubset, fileTrees, 
-                                   fileXML, trait, id), pattern = map(id)),
+    tar_target(imp, 
+        getImputations(d, mcc, treesSubset, fileTrees, fileXML, trait, id), 
+        pattern = map(id),
+        cue = tar_cue(mode="never")),
     # plot imputation results on tree
     tar_target(plot, plotImputations(trait, mcc, imp)),
     # get result for validations
@@ -97,7 +135,7 @@ list(
   ### 2. Imputations
   
   # ids to loop over (0 = main, 1:n = validations)
-  tar_target(id, 0:NUMBER_OF_VALIDATIONS),
+  tar_target(id, 0:NUMBER_OF_VALIDATIONS, cue = tar_cue(mode="never")),
   ## run imputations
   impTargets,
   # combine results
