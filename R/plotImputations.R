@@ -8,7 +8,7 @@ plotImputations <- function(trait, mcc, imp) {
     mutate(height = ifelse(Value == "?", Imputation, 1))
   # plot on tree
   out <-
-    ggtree(mcc, size = 0.01, layout = "circular") +
+    ggtree(mcc, layout = "circular") +
     geom_fruit(aes(x = height, y = Language_ID, fill = Value), data = imp,
                geom = geom_bar, orientation = "y", stat = "identity",
                offset = 0) +
