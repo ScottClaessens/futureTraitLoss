@@ -6661,7 +6661,7 @@ spec="Alignment">
 
     <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
 
-    <run id="mcmc" spec="MCMC" chainLength="50000">
+    <run id="mcmc" spec="MCMC" chainLength="1000000">
         <state id="state" spec="State" storeEvery="5000">
             <stateNode id="treeIndex.t:tree" spec="parameter.IntegerParameter" lower="0" upper="1">0</stateNode>
             <stateNode id="Tree.t:tree" spec="fixedtreeanalysis.evolution.tree.IndexedTreeFromSet" index="@treeIndex.t:tree" treeSetFile="$(treesFile)">
@@ -13359,7 +13359,7 @@ spec="Alignment">
         <operator id="treeIndexUniform" spec="fixedtreeanalysis.evolution.operators.UniformGibbsOperator" parameter="@treeIndex.t:tree" weight="3.0"/>
         <operator id="georateScaler.s:gbTrait" spec="ScaleOperator" parameter="@relativeGeoRates.s:gbTrait" scaleAllIndependently="true" scaleFactor="0.99" weight="30.0"/>
         <operator id="geoMuScaler.c:gbTrait" spec="ScaleOperator" parameter="@traitClockRate.c:gbTrait" scaleFactor="0.9" weight="3.0"/>
-        <logger id="tracelog" spec="Logger" fileName="$(logFile)" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <logger id="tracelog" spec="Logger" fileName="$(logFile)" logEvery="1000" sanitiseHeaders="true" sort="smart">
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
@@ -13374,10 +13374,10 @@ spec="Alignment">
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
-        <logger id="treelog.t:tree" spec="Logger" fileName="$(treesOutFile)" logEvery="500000" mode="tree">
+        <logger id="treelog.t:tree" spec="Logger" fileName="$(treesOutFile)" logEvery="1000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:tree" spec="beast.base.evolution.TreeWithMetaDataLogger" dp="8" tree="@Tree.t:tree"/>
         </logger>
-        <logger id="treeWithTraitLogger.gbTrait" spec="Logger" fileName="$(imputationsFile)" logEvery="5000" mode="tree">
+        <logger id="treeWithTraitLogger.gbTrait" spec="Logger" fileName="$(imputationsFile)" logEvery="1000" mode="tree">
             <log id="treeWithTraitLoggerItem.t:tree" spec="beastclassic.evolution.tree.TreeWithTraitLogger" tree="@Tree.t:tree">
                 <metadata idref="posterior"/>
                 <metadata idref="traitedtreeLikelihood.gbTrait"/>
