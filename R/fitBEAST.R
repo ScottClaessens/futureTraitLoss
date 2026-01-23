@@ -20,7 +20,8 @@ fitBEAST <- function(fileXML, trait, id, numThreads = 1) {
       # state file
       "-statefile temp/state_", trait, ".state ",
       # xml file
-      fileXML
+      fileXML,
+      " 2>&1 | tee temp/out_", trait, ".run"   # debug
     )
   # execute commands
   system(command)
